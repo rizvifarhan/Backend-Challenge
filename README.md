@@ -1,5 +1,6 @@
 # Backend-Challenge
 
+# Section D: Influencer Engagement Analytics Project
 
 ```markdown
 # Influencer Engagement Analytics Project
@@ -107,6 +108,9 @@ influencer_2,campaign_6,1860,31,6,6
 ...
 ``` 
 *(See full sample in repository)*
+
+
+# Section B: AI-Powered Influencer Brief Generator
 ```
 
 ```markdown
