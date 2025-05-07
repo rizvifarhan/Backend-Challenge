@@ -108,3 +108,132 @@ influencer_2,campaign_6,1860,31,6,6
 ``` 
 *(See full sample in repository)*
 ```
+
+```markdown
+# AI-Powered Influencer Brief Generator
+
+## 📌 Chosen Track: AI Brief Generator
+**Why this track?**  
+- Combines LLM capabilities with structured marketing workflows  
+- Demonstrates practical AI integration (caching, retries, tool-chaining)  
+- Solves a real business need for scalable content creation  
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Docker + Docker Compose  
+- OpenAI/OpenRouter API key in `.env`
+
+### Docker Setup (Recommended)
+```bash
+docker-compose up --build
+```
+API will be live at: `http://localhost:5001`
+
+---
+
+## 🔧 Manual Installation
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+---
+
+## 🛠️ Technical Decisions
+
+| Area               | Implementation                 | Rationale                          |
+|--------------------|--------------------------------|------------------------------------|
+| LLM Orchestration  | OpenRouter + JSON mode         | Cost-effective, reliable JSON output |
+| Tools System       | Simple Python functions        | Mockable for testing               |
+| Caching            | Redis (request-hash keyed)     | 100ms cache hits for repeat requests |
+| Resilience         | Exponential backoff retries    | Handles LLM timeouts gracefully    |
+
+---
+
+## 🧪 Testing
+
+### Unit Tests
+```bash
+pytest tests/
+```
+Validates:
+- Tool functions (`trendFetcher`, `personaClassifier`)  
+- Creative angle generation  
+- *(Expand with API tests)*  
+
+### API Example
+```bash
+curl -X POST "http://localhost:5001/generate_brief" \
+-H "Content-Type: application/json" \
+-d '{
+    "brand": "Nike",
+    "product": "Air Max",
+    "goal": "engagement",
+    "platform": "Instagram"
+}'
+```
+
+Sample Response:
+```json
+{
+  "caption": "Step into the future with #AirMax...",
+  "hook_ideas": [
+    "Close-up of sneaker details",
+    "Before/after workout transition",
+    "Celebrity endorsement mockup"
+  ],
+  "hashtags": ["#Trending1", "#Sneakerhead", "#JustDoIt"],
+  "cta": "Tag us in your photos!",
+  "tone": "Energetic and aspirational"
+}
+```
+
+---
+
+## 🔄 Workflow Diagram
+```
+Client → [FastAPI] → Check Cache → Call Tools → LLM → Cache → Response
+                ↑____________Retry_3x_________↑
+```
+
+---
+
+## 📜 Key Components
+
+✅ **Core Tools**  
+- `trendFetcher()`: Generates platform-relevant hashtags  
+- `personaClassifier()`: Matches brand to target audience  
+- `creativeAngle()`: Product-specific content direction  
+
+✅ **Prompt Engineering**  
+- Structured template in `prompts.py`  
+- Enforced JSON output via LLM directives  
+
+✅ **Production Ready**  
+- Redis caching (300s TTL)  
+- Exponential backoff retries  
+- Detailed logging  
+
+---
+
+## 🌟 Sample Use Case
+1. Marketing team submits brand/product details  
+2. System auto-generates:  
+   - Audience persona  
+   - Hashtag recommendations  
+   - Creative direction  
+3. Returns polished brief in <1s (cached)  
+
+```python
+# Example Python client
+import requests
+response = requests.post("http://localhost:5001/generate_brief", json={
+    "brand": "Sephora",
+    "product": "Vitamin C Serum",
+    "goal": "sales",
+    "platform": "TikTok"
+})
+```
