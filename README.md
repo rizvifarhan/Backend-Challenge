@@ -3,112 +3,123 @@
 # Section D: Influencer Engagement Analytics Project
 
 ```markdown
-# Influencer Engagement Analytics Project
+# Influencer Engagement Analytics System
 
-## 📌 Chosen Tracks
-1. **Batch ETL Pipeline**  
-   - Processes 10k+ rows of influencer data with malformed entries  
-   - Calculates engagement rates (`(likes + comments + shares) / views * 100`)  
-   - Optimized for performance (<2 min runtime)  
+## 1) Chosen Tracks
+I selected these two tracks from the assignment:
+- **Batch ETL Processing**: For efficiently handling large datasets (10k rows) with malformed data
+- **Top-Performer API**: To surface the highest-engagement creators in a scalable way
 
-2. **Top-Performer API**  
-   - REST endpoint to query influencers by campaign  
-   - Returns results sorted by engagement rate (descending)  
-   - Supports pagination via `limit` parameter  
+**Why these tracks?**
+The combination allows for:
+1. Robust data processing that can handle real-world messy data
+2. A performant way to query results by campaign
+3. Meeting the strict runtime budget (< 2 minutes for 10k rows)
+4. Creating a foundation that could scale to much larger datasets
 
----
-
-## 🚀 Quick Start
+## 2) Running the Project Locally
 
 ### Prerequisites
-- Docker + Docker Compose  
-- (Optional) Python 3.8+ for native execution  
+- Docker and Docker Compose installed
+- Python 3.8+ (if running without Docker)
 
-### Docker Setup (Recommended)
+### Using Docker (Recommended)
 ```bash
-git clone [your-repo-url]
-cd [repo-directory]
 docker-compose up --build
 ```
-API will be live at: `http://localhost:8000`
+This will:
+1. Start MongoDB container
+2. Start the FastAPI application
+3. Automatically run the ETL process
 
----
-
-## 🔧 Manual Installation
+### Without Docker
 ```bash
+# Install dependencies
 pip install -r requirements.txt
-python etl.py  # Run ETL pipeline
-uvicorn app:app --reload  # Start API
+
+# Start MongoDB (ensure it's running locally on port 27017)
+
+# Run ETL process
+python etl.py
+
+# Start API server
+uvicorn app:app --reload
 ```
 
----
+## 3) Trade-offs, Assumptions & Decisions
 
-## 🛠️ Technical Decisions
+### Trade-offs Made
+1. **Chunk Processing**: Used pandas' chunking to handle memory constraints, trading some speed for memory safety
+2. **Simple Engagement Formula**: Used basic (likes+comments+shares)/views for clarity, though real-world might weight different interactions
+3. **MongoDB Storage**: Chose MongoDB for flexible schema to handle potential future fields
 
-| Area               | Choice                          | Rationale                          |
-|--------------------|---------------------------------|------------------------------------|
-| Data Processing    | Pandas chunked CSV reads        | Memory efficiency for large files  |
-| Error Handling     | Skip malformed rows             | Meet runtime budget (<2 min)       |
-| Storage            | MongoDB                         | Flexible schema for engagement data|
-| API Design         | Single endpoint with filters    | Simplicity + clear use case        |
+### Key Assumptions
+1. CSV format will always include the required columns (though handles missing values)
+2. Views will never be negative (filtered zero views)
+3. API consumers need sorted results by default
+4. Malformed rows can be skipped without failing the entire process
 
----
+### Important Decisions
+1. **Chunk Size**: Set to 1000 rows as balance between memory and I/O overhead
+2. **Data Clearing**: ETL script clears existing data by default (can be commented out)
+3. **Error Handling**: Skips entire chunks on errors (could be made more granular)
+4. **API Design**: Simple GET endpoint with required `campaignId` parameter
 
-## 🧪 Testing
+## 4) Testing Instructions
 
 ### Unit Tests
 ```bash
 python -m unittest test_etl.py
 ```
-Validates:
-- Engagement rate calculations
-- Sorting logic correctness
+Tests:
+1. Engagement rate calculation correctness
+2. Sorting logic for top performers
 
-### API Examples
+### Manual API Testing
+After starting the service:
+
+1. **Get top performers for `campaign_6`**:
 ```bash
-# Top 3 performers for campaign_6
 curl "http://localhost:8000/top-performers?campaignId=campaign_6&limit=3"
-
-# Default (10) results for campaign_10
-curl "http://localhost:8000/top-performers?campaignId=campaign_10"
 ```
 
-Sample Response:
+2. **Get top performer for `campaign_10`**:
+```bash
+curl "http://localhost:8000/top-performers?campaignId=campaign_10&limit=1"
+```
+
+3. **Invalid request (missing `campaignId`)**:
+```bash
+curl "http://localhost:8000/top-performers"
+```
+
+### Sample Expected Output
+For `campaign_6` (top 3):
 ```json
 [
   {
     "campaignId": "campaign_6",
     "influencerId": "influencer_3",
     "engagementRate": 2.25,
-    "_id": "665a..."
+    "_id": "123abc..."
+  },
+  {
+    "campaignId": "campaign_6",
+    "influencerId": "influencer_9",
+    "engagementRate": 7.14,
+    "_id": "456def..."
+  },
+  {
+    "campaignId": "campaign_6",
+    "influencerId": "influencer_1",
+    "engagementRate": 1.64,
+    "_id": "789ghi..."
   }
 ]
 ```
 
----
 
-## 🎯 Key Features
-✅ **ETL Pipeline**  
-- Processes data in 1000-row chunks  
-- Auto-skips rows with missing/zero-view data  
-- Logs processed/skipped counts  
-
-✅ **API Endpoint**  
-- Fast lookup by `campaignId`  
-- Configurable result limit  
-- Descending engagement sort  
-
----
-
-## 📜 Sample Data Structure
-```csv
-influencerId,campaignId,views,likes,comments,shares
-influencer_1,campaign_6,16795,213,48,14
-influencer_2,campaign_6,1860,31,6,6
-...
-``` 
-*(See full sample in repository)*
-
+```
 
 # Section B: AI-Powered Influencer Brief Generator
 ```
