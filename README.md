@@ -121,8 +121,8 @@ For `campaign_6` (top 3):
 
 ```
 
-# Section B: AI-Powered Influencer Brief Generator
 ```
+# Section B: AI-Powered Influencer Brief Generator
 
 ```markdown
 # AI-Powered Influencer Brief Generator
