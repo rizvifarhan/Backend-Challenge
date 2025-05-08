@@ -143,6 +143,21 @@ curl -X POST "http://localhost:5001/generate_brief" \
 ```
 
 ## 📚 Additional Resources
-- Sample data files included in `/data` directory
+- API DOCS
+
+1) Section B
+
+Access the following link:-
+
+lINK = https://.postman.co/workspace/My-Workspace~b4d2860c-5f99-495d-8b52-2e762bc3f9f6/request/42655461-de3f1ba1-be8a-4aeb-82db-ddec8e55a558?action=share&creator=42655461&ctx=documentation&active-environment=42655461-99d25d92-5e55-4059-bce7-a22a8c738319
+
+
+2) Section D
+
+Access the following link:-
+
+lINK = https://.postman.co/workspace/My-Workspace~b4d2860c-5f99-495d-8b52-2e762bc3f9f6/request/42655461-de3f1ba1-be8a-4aeb-82db-ddec8e55a558?action=share&creator=42655461&ctx=documentation&active-environment=42655461-99d25d92-5e55-4059-bce7-a22a8c738319
+
+   
 - Environment template files (`.env.example`) for configuration
 - Docker logs provide detailed runtime information
