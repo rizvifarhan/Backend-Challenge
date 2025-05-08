@@ -43,7 +43,7 @@ python etl.py
 
 # For Brief Generator
 python -m pip install -r brief_requirements.txt
-uvicorn brief_app:app --port 5001
+python3 -m uvicorn app.main:app --reload
 ```
 
 ## ⚖️ Architectural Decisions
@@ -79,10 +79,10 @@ uvicorn brief_app:app --port 5001
 ### Unit Tests
 ```bash
 # Run ETL tests
-python -m unittest test_etl.py
+python3 -m pytest tests/test_etl.py
 
 # Run Brief Generator tests
-python -m unittest test_brief.py
+python3 -m pytest tests/test_app.py
 ```
 
 ### API Test Cases
@@ -90,7 +90,7 @@ python -m unittest test_brief.py
 #### ETL Service
 1. **Get top performers**:
 ```bash
-curl "http://localhost:8000/top-performers?campaignId=campaign_6&limit=3"
+curl "http://localhost:8000/top-performers?campaignId=campaign_1&limit=5"
 ```
 
 2. **Invalid request**:
@@ -103,7 +103,7 @@ curl "http://localhost:8000/top-performers"
 ```bash
 curl -X POST "http://localhost:5001/generate_brief" \
 -H "Content-Type: application/json" \
--d '{"brand":"Nike","product":"Air Max","goal":"awareness","platform":"Instagram"}'
+-d '{"brand":"Nike","product":"Air Max Running Shoes","goal":"Increase engagement among young athletes","platform":"Instagram","persona": "Millennial, Fitness Enthusiast","creative_angle": "Highlight the shoe\'s innovative cushioning technology","hashtags": ["#LuxuryWatch", "#TimelessElegance", "#Craftsmanship"]}'
 ```
 
 2. **Cached request**:
@@ -111,7 +111,7 @@ curl -X POST "http://localhost:5001/generate_brief" \
 # Run same request twice - second should be faster
 curl -X POST "http://localhost:5001/generate_brief" \
 -H "Content-Type: application/json" \
--d '{"brand":"Adidas","product":"Ultraboost","goal":"sales","platform":"TikTok"}'
+-d '{"brand":"Adidas","product":"Ultraboost","goal":"sales","platform":"TikTok", "persona": "Millennial, Fitness Enthusiast","creative_angle": "Highlight the shoe\'s innovative cushioning technology","hashtags": ["#LuxuryWatch", "#TimelessElegance", "#Craftsmanship"]}'
 ```
 
 ### Expected Responses
@@ -119,26 +119,37 @@ curl -X POST "http://localhost:5001/generate_brief" \
 ```json
 [
   {
-    "campaignId": "campaign_6",
-    "influencerId": "influencer_3",
-    "engagementRate": 2.25
+    "_id": "681b7850cc95e0aa6d46701b",
+    "campaignId": "campaign_1",
+    "influencerId": "influencer_3764",
+    "engagementRate": 9.984033367004464
   },
-  ...
+  {
+    "_id": "681b7850cc95e0aa6d4674a6",
+    "campaignId": "campaign_1",
+    "influencerId": "influencer_4927",
+    "engagementRate": 9.972533570081012
+  },
+ .... more 3
 ]
 ```
 
 **Brief Generator Success**:
 ```json
 {
-  "caption": "Step into style with the new Air Max...",
-  "hook_ideas": [
-    "Which celeb wore it best?",
-    "Before/after comfort test",
-    "Hidden design details reveal"
-  ],
-  "hashtags": ["#sneakerhead", "#justdoit", "#airmax"],
-  "cta": "Tap link in bio to shop now!",
-  "tone": "Energetic and aspirational"
+    "caption": "Step into the future of running with Nike Air Max. Experience unparalleled comfort and performance with our innovative cushioning technology. Perfect for the millennial fitness enthusiast who demands the best. Lace up and feel the difference!",
+    "hook_ideas": [
+        "Feel the cushioning revolution under your feet.",
+        "Transform your running game with every step.",
+        "Elevate your fitness journey with the ultimate in comfort."
+    ],
+    "hashtags": [
+        "#NikeAirMax",
+        "#InnovativeCushioning",
+        "#YoungAthletes"
+    ],
+    "cta": "Tap to learn more about the game-changing Air Max technology!",
+    "tone": "Exciting and motivational, inspiring young athletes to push their limits."
 }
 ```
 
@@ -159,6 +170,4 @@ Access the following link:-
 lINK = https://.postman.co/workspace/My-Workspace~b4d2860c-5f99-495d-8b52-2e762bc3f9f6/request/42655461-de3f1ba1-be8a-4aeb-82db-ddec8e55a558?action=share&creator=42655461&ctx=documentation&active-environment=42655461-99d25d92-5e55-4059-bce7-a22a8c738319
 
    
-- Environment template files (`.env.example`) for configuration
-- Docker logs provide detailed runtime information
 # Femkeeda_challange
